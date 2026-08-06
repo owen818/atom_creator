@@ -17,6 +17,9 @@ RUN mvn package -DskipTests -q
 FROM eclipse-temurin:25-jre
 WORKDIR /app
 COPY --from=build /app/target/atoms-demo-1.0.0.jar app.jar
+# Spring serves the Vue production bundle from file:frontend/dist/.
+# It must be copied into the runtime image as well as the executable JAR.
+COPY --from=build /app/frontend/dist ./frontend/dist
 VOLUME ["/app/data"]
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]

@@ -76,7 +76,7 @@ DEEPSEEK_API_KEY=你的密钥 java -jar target/atoms-demo-1.0.0.jar
 
 部署到 Render、Railway、Fly.io 或任意容器平台时：
 
-1. 从仓库构建 `Dockerfile`，服务端口设为 `8080`（平台使用 `PORT` 时本应用自动读取）。
+1. 从仓库构建 `Dockerfile`，服务端口设为 `8080`（平台使用 `PORT` 时本应用自动读取）。Dockerfile 已将 Vue 的 `frontend/dist` 复制到最终运行镜像。
 2. 添加 Secret：`DEEPSEEK_API_KEY`，可选 `DEEPSEEK_MODEL=deepseek-chat`。
 3. 挂载持久卷到 `/app/data`，否则容器重启会丢失 SQLite 数据。
 4. 将生成的 HTTPS 地址作为在线体验链接提交。
