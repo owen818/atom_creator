@@ -1,0 +1,6 @@
+data/
+frontend/node_modules/
+frontend/dist/
+target/
+.m2/
+.env

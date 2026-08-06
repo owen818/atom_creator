@@ -1,0 +1,9 @@
+services:
+  atoms-demo:
+    build: .
+    ports: ["8080:8080"]
+    environment:
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
+      DATA_PATH: /app/data/atoms-demo.db
+    volumes: ["./data:/app/data"]

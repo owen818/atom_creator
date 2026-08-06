@@ -1,0 +1,13 @@
+server:
+  port: ${PORT:8080}
+spring:
+  datasource:
+    url: jdbc:sqlite:${DATA_PATH:./data/atoms-demo.db}
+    driver-class-name: org.sqlite.JDBC
+  sql.init.mode: always
+  web.resources.static-locations: file:frontend/dist/,classpath:/static/
+atoms:
+  deepseek:
+    # The value must come from a deployment secret or local environment variable.
+    api-key: ${DEEPSEEK_API_KEY:}
+    model: ${DEEPSEEK_MODEL:deepseek-chat}
