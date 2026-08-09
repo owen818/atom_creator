@@ -40,7 +40,9 @@ public class ApiController {
     return db.queryForList("SELECT p.id,p.title,p.prompt,p.status,p.created_at,p.updated_at,COUNT(g.id) AS versions FROM projects p LEFT JOIN generations g ON g.project_id=p.id WHERE p.user_id=? GROUP BY p.id ORDER BY p.updated_at DESC", uid);
   }
   @GetMapping("/projects/{id}") public Map<String,Object> project(@RequestHeader("X-User-Id") long uid, @PathVariable("id") long id) {
-    Map<String,Object> p = owned(uid,id); p.put("generations", db.queryForList("SELECT id,version,prompt,provider,created_at FROM generations WHERE project_id=? ORDER BY version DESC", id)); return p;
+    Map<String,Object> p = owned(uid,id); p.put("generations", db.queryForList("SELECT id,version,prompt,provider,created_at FROM generations WHERE project_id=? ORDER BY version DESC", id));
+    p.put("agentRuns", db.queryForList("SELECT id,change_type,prompt,status,stage,plan,trace,regression,result_version,created_at,updated_at FROM agent_runs WHERE project_id=? ORDER BY id DESC", id));
+    return p;
   }
   @GetMapping("/projects/{id}/preview") public Map<String,Object> preview(@RequestHeader("X-User-Id") long uid, @PathVariable("id") long id, @RequestParam(required=false) Integer version) {
     owned(uid,id); String sql = "SELECT html,provider,version FROM generations WHERE project_id=? " + (version == null ? "ORDER BY version DESC LIMIT 1" : "AND version=?");
