@@ -10,7 +10,7 @@ const trace=ref([]),regression=ref(null),codeOpen=ref(false),code=ref('')
 const agentRun=ref(null),planDraft=ref(''); let pollTimer=null
 const headers=()=>({'Content-Type':'application/json','X-User-Id':user.value?.id})
 function preparePreview(html){return (html||'').replace("onclick='n.textContent=+n.textContent+1'","onclick=\"document.getElementById('n').textContent=String(Number(document.getElementById('n').textContent)+1)\"")}
-async function api(url,options={}){const r=await fetch('/api'+url,{...options,headers:{...headers(),...(options.headers||{})}});if(!r.ok)throw new Error((await r.json().catch(()=>({}))).message||'请求失败');return r.status===204?null:r.json()}
+async function api(url,options={}){const r=await fetch('/api'+url,{...options,headers:{...headers(),...(options.headers||{})}});if(!r.ok){const body=await r.json().catch(()=>({}));throw new Error(body.detail||body.message||body.error||`请求失败（HTTP ${r.status}）`)}return r.status===204?null:r.json()}
 async function auth(){error.value='';try{const u=await api('/auth/'+authMode.value,{method:'POST',body:JSON.stringify(form.value)});user.value=u;localStorage.setItem('atoms-user',JSON.stringify(u));await load()}catch(e){error.value=e.message}}
 async function load(){projects.value=await api('/projects');if(projects.value.length&&!active.value)await choose(projects.value[0].id)}
 async function choose(id){active.value=await api('/projects/'+id);const x=await api('/projects/'+id+'/preview').catch(()=>null);preview.value=preparePreview(x?.html);selectedVersion.value=x?.version||null;prompt.value=active.value.prompt;trace.value=[];regression.value=null}
