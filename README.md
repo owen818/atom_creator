@@ -9,7 +9,9 @@
 - **真实交互**：账号、项目创建、重生成、版本切换、删除与预览均可实际操作。
 - **持久化**：SQLite 保存在 `data/atoms-demo.db`，重启后账号、项目和版本仍在。
 - **DeepSeek 接入**：后端通过 DeepSeek OpenAI-compatible `chat/completions` API 调用 `deepseek-chat`；密钥不进入前端。没有密钥时使用带提示的本地回退生成器，保证评审可立即走通流程。
-- **延展能力**：同一项目的每次提示生成一个版本，可回看任一版本。
+- **增量迭代与回归**：修改或 Bug 修复模式会把当前 HTML 和最近 8 条历史需求传给模型，生成不可变的新版本；后端透明展示按钮、表单和脚本的结构回归检查结果。
+- **交付能力**：支持查看生成 HTML、一键复制和导出包含 `index.html`、版本信息的 ZIP 文件。
+- **可观察 Agent 流程**：生成先进入可编辑计划，用户批准后异步执行；界面持续显示上下文加载、代码生成、回归检查和版本保存阶段，并支持取消。任务状态持久化在 `agent_runs` 表中。
 
 ## 技术与架构
 
@@ -26,6 +28,18 @@ Vue 浏览器 ──REST──> Spring Boot ──> SQLite
                          └──> DeepSeek chat/completions API
 Vue iframe <── sandboxed HTML artifact ── Spring Boot
 ```
+
+## 验收测试
+
+完整的手工验收与回归测试步骤见 [TEST_CASES.md](TEST_CASES.md)。
+
+## Agent 使用流程
+
+1. 选择“创建应用”“增量修改”或“修复 Bug”，填写需求并点击“生成计划”。
+2. 审阅或编辑计划；此时尚未调用代码生成模型。
+3. 点击“批准并执行”，页面轮询展示 `LOADING_CONTEXT → GENERATING → REGRESSION → COMPLETED`。
+4. 可在执行中请求取消；模型 HTTP 请求无法被强制中断，但完成后会检查取消状态，不会保存新版本。
+5. 完成后查看回归检查、预览、代码或导出的 ZIP。
 
 项目结构：
 
